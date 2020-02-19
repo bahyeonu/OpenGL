@@ -1,16 +1,18 @@
 package com.example.opengl
 
+import android.opengl.GLSurfaceView
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
 class MainActivity : AppCompatActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    private  lateinit var gLView: GLSurfaceView
+
+    public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-
-
+        gLView = MyGLSurfaceView(this)
+        setContentView(gLView)
     }
 }
 

@@ -79,12 +79,12 @@ class Triangle{
                 GLES30.glUniform4fv(colorHandle, 1, color,0) // 도형 색상 설정
             }
 
-        vPMatrixHandle = GLES30.glGetUniformLocation(mProgram, "uMVPMatrix")
-        GLES30.glUniformMatrix4fv(vPMatrixHandle, 1, false, mvpMatrix, 0)
-        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, vertexCount)
-        GLES30.glDisableVertexAttribArray(positionHandle)
-        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, vertexCount) // 삼각형 그리기
-        GLES30.glDisableVertexAttribArray(it) // vertex 속성 비활성화
+        vPMatrixHandle = GLES30.glGetUniformLocation(mProgram, "uMVPMatrix") // 회전시 uMVPMatrix member 획득
+        GLES30.glUniformMatrix4fv(vPMatrixHandle, 1, false, mvpMatrix, 0) // mvpMatrix 좌표 데이터 준비
+
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, vertexCount) // 도형 그리기
+        GLES30.glDisableVertexAttribArray(positionHandle) // vertex array 비활성화
+
         }
     }
 }

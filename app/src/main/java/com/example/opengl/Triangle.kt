@@ -26,58 +26,65 @@ class Triangle{
         }
 
 
-        private val vertexShaderCode =
-            "attribute vec4 vPosition;" +
-            "void main() {" +
-            "   gl_Position = vPosition;" +
-            "}"
+    private val vertexShaderCode =
+        "uniform mat4 uMVPMatrix;" +
+        "attribute vec4 vPosition;" +
+        "void main() {" +
+        "  gl_Position = uMVPMatrix * vPosition;" +
+        "}"
 
-        private val fragmentShaderCode =
-            "precision mediump float" +
-             "uniform vec4 vColor;" +
-             "void main(){" +
-             "  gl_FragColor = vColor;" +
-             "}"
+    private var vPMatrixHandle: Int = 0
 
-        private var mProgram: Int
+    private val fragmentShaderCode =
+        "precision mediump float;" +
+        "uniform vec4 vColor;" +
+        "void main() {" +
+        "  gl_FragColor = vColor;" +
+        "}"
 
-        init {
-            val myGLRenderer = MyGLRenderer()
-            // vertex shader 타입 생성
-            val vertexShader: Int = myGLRenderer.loadShader(GLES30.GL_VERTEX_SHADER, vertexShaderCode)
-            // fragment shader 타입 생성
-            val fragmentShader: Int = myGLRenderer.loadShader(GLES30.GL_FRAGMENT_SHADER, fragmentShaderCode)
+    private var mProgram: Int
 
-            // 빈 OpenGL ES Program 생성
-            mProgram = GLES30.glCreateProgram().also {
-                // program에 vertex shader 추가
-                GLES30.glAttachShader(it, vertexShader)
-                // program에 fragment shader 추가
-                GLES30.glAttachShader(it, fragmentShader)
-                // 실행 가능한 OpenGL ES program 생성
-                GLES30.glLinkProgram(it)
-            }
+    init {
+        val myGLRenderer = MyGLRenderer()
+        // vertex shader 타입 생성
+        val vertexShader: Int = myGLRenderer.loadShader(GLES30.GL_VERTEX_SHADER, vertexShaderCode)
+        // fragment shader 타입 생성
+        val fragmentShader: Int = myGLRenderer.loadShader(GLES30.GL_FRAGMENT_SHADER, fragmentShaderCode)
+
+        // 빈 OpenGL ES Program 생성
+        mProgram = GLES30.glCreateProgram().also {
+            // program에 vertex shader 추가
+            GLES30.glAttachShader(it, vertexShader)
+            // program에 fragment shader 추가
+            GLES30.glAttachShader(it, fragmentShader)
+            // 실행 가능한 OpenGL ES program 생성
+            GLES30.glLinkProgram(it)
         }
-
-        private var positionHandle: Int = 0
-        private var mColorHandle: Int = 0
-
-        private val vertexCount: Int = triangleCoords.size / COORDS_PER_VERTEX
-        private val vertexStride: Int = COORDS_PER_VERTEX * 4 // 정점당 4 바이트 할당
-
-        fun draw(){
-            GLES30.glUseProgram(mProgram) // OpenGL ES environment에 program 추가
-            // vertex shader의 vPosition member 핸들 획득
-            positionHandle = GLES30.glGetAttribLocation(mProgram, "vPosition").also {
-                GLES30.glEnableVertexAttribArray(it) // 삼각형 정점 핸들 사용
-                GLES30.glVertexAttribPointer(it, COORDS_PER_VERTEX, GLES30.GL_FLOAT, false, vertexStride, vertexBuffer) // 도형 좌표 데이터 준비
-                // fragment shader의 vPosition member 핸들 획득
-                mColorHandle = GLES30.glGetUniformLocation(mProgram, "vColor").also {colorHandle ->
-                    GLES30.glUniform4fv(colorHandle, 1, color,0) // 도형 색상 설정
-                }
-                GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, vertexCount) // 삼각형 그리기
-                GLES30.glDisableVertexAttribArray(it) // vertex 속성 비활성화
-            }
-        }
-
     }
+
+    private var positionHandle: Int = 0
+    private var mColorHandle: Int = 0
+
+    private val vertexCount: Int = triangleCoords.size / COORDS_PER_VERTEX
+    private val vertexStride: Int = COORDS_PER_VERTEX * 4 // 정점당 4 바이트 할당
+
+    fun draw(mvpMatrix: FloatArray){
+        GLES30.glUseProgram(mProgram) // OpenGL ES environment에 program 추가
+        // vertex shader의 vPosition member 핸들 획득
+        positionHandle = GLES30.glGetAttribLocation(mProgram, "vPosition").also {
+            GLES30.glEnableVertexAttribArray(it) // 삼각형 정점 핸들 사용
+            GLES30.glVertexAttribPointer(it, COORDS_PER_VERTEX, GLES30.GL_FLOAT, false, vertexStride, vertexBuffer) // 도형 좌표 데이터 준비
+            // fragment shader의 vPosition member 핸들 획득
+            mColorHandle = GLES30.glGetUniformLocation(mProgram, "vColor").also {colorHandle ->
+                GLES30.glUniform4fv(colorHandle, 1, color,0) // 도형 색상 설정
+            }
+
+        vPMatrixHandle = GLES30.glGetUniformLocation(mProgram, "uMVPMatrix")
+        GLES30.glUniformMatrix4fv(vPMatrixHandle, 1, false, mvpMatrix, 0)
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, vertexCount)
+        GLES30.glDisableVertexAttribArray(positionHandle)
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, vertexCount) // 삼각형 그리기
+        GLES30.glDisableVertexAttribArray(it) // vertex 속성 비활성화
+        }
+    }
+}

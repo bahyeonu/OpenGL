@@ -3,14 +3,13 @@ package com.example.opengl
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
-import android.os.SystemClock
 
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 class MyGLRenderer: GLSurfaceView.Renderer{
     private lateinit var mTriangle: Triangle
-    //private lateinit var mSquare: Square
+    private lateinit var mSquare: Square
 
     var angle: Float = 0f
 
@@ -36,7 +35,7 @@ class MyGLRenderer: GLSurfaceView.Renderer{
         GLES30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f) // 바탕색
 
         mTriangle = Triangle()
-        //mSquare = Square()
+        mSquare = Square()
     }
 
     override fun onDrawFrame(unused: GL10) {
@@ -51,7 +50,8 @@ class MyGLRenderer: GLSurfaceView.Renderer{
         //val angle = 0.09f * time.toInt()
         Matrix.setRotateM(rotationMatrix, 0, angle, 0f, 0f, -1.0f)
         Matrix.multiplyMM(scratch, 0, vPMatrix, 0, rotationMatrix, 0)
-        mTriangle.draw(scratch)
+        //mTriangle.draw(scratch)
+        mSquare.draw(scratch)
     }
 
     override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {

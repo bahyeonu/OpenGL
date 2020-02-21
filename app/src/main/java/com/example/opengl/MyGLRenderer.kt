@@ -10,6 +10,18 @@ class MyGLRenderer: GLSurfaceView.Renderer{
     private lateinit var mTriangle: Triangle
     //private lateinit var mSquare: Square
 
+    fun loadShader(type: Int, shaderCode: String): Int {
+
+        // vertex shader type 생성
+        // fragment shader type 생성
+        return GLES30.glCreateShader(type).also { shader ->
+
+            // shader에 소스코드를 초가하고 컴파일
+            GLES30.glShaderSource(shader, shaderCode)
+            GLES30.glCompileShader(shader)
+        }
+    }
+
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
         GLES30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
 
